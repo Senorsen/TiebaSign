@@ -65,7 +65,7 @@ for($i=0;$i<count($users);$i++)
     mysql_query("UPDATE `tb_user` SET `last`='".date('Y-m-d')."' WHERE `id`=$id");
     echo "\n";
 }
-echo date("H:i:s")."    全部签到完成，用时 ".date("H:i:s",time()-$starttime)."\n";
+echo date("H:i:s")."    全部签到完成，用时 ".date("i:s",time()-$starttime)."\n";
 function sign($cookies,$tbs,$fid,$tb)
 {
     $tbsurl='http://c.tieba.baidu.com/c/c/forum/sign';
