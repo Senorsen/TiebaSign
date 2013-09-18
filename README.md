@@ -13,7 +13,7 @@ Type: int, varchar(255), varchar(1024), varchar(50)
 Save your 'baidu tieba' account info here.
 
 Then open the php in cosole mode
-e.g. in windows:(if the folder of php.exe __IS in your PATH__ :) `php.exe F:\TiebaSign\exectbs.php`   (Absolute)
+e.g. in windows:(if the folder of php.exe __IS in your PATH__ :) `php.exe F:\TiebaSign\exectbs.php`   (Absolute path)
 
 That's all.
 
@@ -21,7 +21,7 @@ License
 ---
 The MIT License (MIT)
 
-Copyright (c) 2013 Senor(zhs490770@foxmail.com)
+Copyright (c) 2013 Senor(  zhs490770@foxmail.com  )
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
