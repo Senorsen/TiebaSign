@@ -6,20 +6,20 @@ php script with php.exe .
 
 Usage
 ---
-Create file: conn.php, and connect the mysql server to variable: $con .
-Create a table(named tb_user) in a mysql database (such as test);
-This table has four fields: `id`(A_I), `desc`(user description; nickname), `cookies`(at wapp.baidu.com) and `last`.
-Type: int, varchar(255), varchar(1024), varchar(50)
-Save your 'baidu tieba' account info here.
+Create file: conn.php, and connect the mysql server to variable: $con .  
+Create a table(named tb_user) in a mysql database (such as test);  
+This table has four fields: `id`(A_I), `desc`(user description; nickname), `cookies`(at wapp.baidu.com) and `last`.  
+Type: int, varchar(255), varchar(1024), varchar(50)  
+Save your 'baidu tieba' account info here.  
 
-Then open the php in cosole mode
-e.g. in windows:(if the folder of php.exe __IS in your PATH__ :) `php.exe F:\TiebaSign\exectbs.php`   (Absolute path)
+Then open the php in cosole mode  
+e.g. in windows:(if the folder of php.exe __IS in your PATH__ ) `php.exe F:\TiebaSign\exectbs.php`   (Absolute path)  
 
-That's all.
+That's all.  
 
 License
 ---
-The MIT License (MIT)
+The MIT License (MIT)  
 
 Copyright (c) 2013 Senor(  zhs490770@foxmail.com  )
 
