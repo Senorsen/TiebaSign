@@ -48,7 +48,7 @@ for($i=0;$i<count($users);$i++)
                 echo "    Ìø¹ý  $tb\n";
                 continue;
             }
-            printf("%-30s","    Ç©µ½  $tb: ");
+            printf("%-30s","    Ç©µ½  $tb ");
             $ret = sign($cookies,$tbs,$fid,$tb);
             if($ret->no!=2)
             {

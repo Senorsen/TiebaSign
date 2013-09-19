@@ -38,11 +38,11 @@ int main()
 			{
 				system(syscom);
 			}
-			else if (hour == 5 && lh != 5)
+			else if (hour == 12 && lh != 12)
 			{
 				system(syscom);
 			}
-			else if (hour == 14 && lh != 14)
+			else if (hour == 22 && lh != 22)
 			{
 				system(syscom);
 			}
