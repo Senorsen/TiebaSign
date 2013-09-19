@@ -123,9 +123,25 @@ function gettb($cookies,$filter)
     {
         array_push($tbn, (object)array('fid'=>$tbn_obj[$i]->forum_id,'tb'=>mb_convert_encoding($tbn_obj[$i]->forum_name,"gbk","utf-8"),'level'=>$tbn_obj[$i]->level_id,'exp'=>$tbn_obj[$i]->cur_score));
     }
+    expsort(0,count($tbn)-1,$tbn);  //按经验值排序
     $tbs_obj = json_decode(curlFetch("http://tieba.baidu.com/dc/common/tbs","$cookies"));
     $tbs = $tbs_obj->tbs;
     return (object)array('tbs'=>$tbs,'tbn'=>$tbn);
+}
+function expsort($l,$r,&$a)
+{
+    $i=$l;$j=$r;$m=$a[intval(($l+$r)/2)]->exp;
+    do{
+        while($a[$i]->exp>$m) $i++;
+        while($m>$a[$j]->exp) $j--;
+        if($i<=$j)
+        {
+            $n=$a[$i];$a[$i]=$a[$j];$a[$j]=$n;
+            $i++;$j--;
+        }
+    }while($i<=$j);
+    if($l<$j) expsort($l,$j,$a);
+    if($i<$r) expsort($i,$r,$a);
 }
 function UserFilter($tbname,$lv,$ex,$filter){$fr=1;eval($filter);return $fr;}
 function curlFetch($url, $cookie = "", $data = null, $ua = "")
