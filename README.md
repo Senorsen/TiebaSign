@@ -13,7 +13,11 @@ Type: int, varchar(255), varchar(1024), varchar(50)
 Save your 'baidu tieba' account info here.  
 
 Then open the php in cosole mode  
-e.g. in windows:(if the folder of php.exe __IS in your PATH__ ) `php.exe F:\TiebaSign\exectbs.php`   (Absolute path)  
+(Manual: )    
+e.g. in windows:(if the folder of php.exe __IS in your PATH__ ) `php exectbs.php`    
+(Auto: )   
+use windows.cpp (P.S. it's for windows);in linux can use croontab.   
+
 
 That's all.  
 
