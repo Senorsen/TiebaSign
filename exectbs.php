@@ -22,8 +22,13 @@ echo "开始时间： ".date("H:i:s",$starttime)."\n";
 while($row = mysql_fetch_array($res_users))
 {
     echo "获取：".$row['desc'];
-    $alltb_o = gettb($row['cookies'],$row['filter']);
+    $alltb_o = NULL;
+    while(is_null($alltb_o))
+    {
+        $alltb_o = gettb($row['cookies'],$row['filter']);
+    }
     echo " - ".count($alltb_o->tbn)."\n";
+    if(count($alltb_o->tbn)==0) echo "-----------登录状态失效？\n";
     array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'cookies'=>$row['cookies'],'filter'=>$row['filter'],'alltb'=>$alltb_o));
 }
 for($i=0;$i<count($users);$i++)
@@ -114,19 +119,22 @@ function sign($cookies,$tbs,$fid,$tb)
 function gettb($cookies,$filter)
 {
     //返回tbs及tbn
+    $tbs_obj = json_decode(curlFetch("http://tieba.baidu.com/dc/common/tbs","$cookies"));
+    $tbs = $tbs_obj->tbs;
+    $is_login = $tbs_obj->is_login;
+    if(!$is_login) return (object)array('tbs'=>'','tbn'=>array());
     $tbn = array();
     $str = curlFetch("http://tieba.baidu.com/","$cookies");
     preg_match('/forums["][:](.+?[\]])/',$str,$matches);
+    if(is_null($matches)) return NULL;
     $str = $matches[1];
     $tbn_obj = json_decode($str);
     if(is_null($tbn_obj)) return (object)array('tbs'=>'','tbn'=>array());
     for($i=0;$i<count($tbn_obj);$i++)
     {
-        array_push($tbn, (object)array('fid'=>$tbn_obj[$i]->forum_id,'tb'=>mb_convert_encoding($tbn_obj[$i]->forum_name,"gbk","utf-8"),'level'=>$tbn_obj[$i]->level_id,'exp'=>$tbn_obj[$i]->cur_score));
+        array_push($tbn, (object)array('fid'=>$tbn_obj[$i]->forum_id,'tb'=>mb_convert_encoding($tbn_obj[$i]->forum_name,"gbk","utf-8"),'level'=>isset($tbn_obj[$i]->level_id)?$tbn_obj[$i]->level_id:0,'exp'=>isset($tbn_obj[$i]->cur_score)?$tbn_obj[$i]->cur_score:0));
     }
-    expsort(0,count($tbn)-1,$tbn);  //按经验值排序
-    $tbs_obj = json_decode(curlFetch("http://tieba.baidu.com/dc/common/tbs","$cookies"));
-    $tbs = $tbs_obj->tbs;
+    if(count($tbn)>0)expsort(0,count($tbn)-1,$tbn);  //按经验值排序
     return (object)array('tbs'=>$tbs,'tbn'=>$tbn);
 }
 function expsort($l,$r,&$a)
