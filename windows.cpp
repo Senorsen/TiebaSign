@@ -9,7 +9,7 @@ using namespace std;
 
 int main()
 {
-	char syscom[] = "php.exe D:\\GZOI\\server\\DebugTest\\tba\\exectbs.php > D:\\GZOI\\server\\DebugTest\\tba\\log.txt";
+	char syscom[] = "php.exe exectbs.php > log.txt";
 	struct tm *newtime;
 	char tmpbuf[128];
 	time_t lt1;

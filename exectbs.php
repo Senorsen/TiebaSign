@@ -17,6 +17,7 @@ if(!mysql_set_charset("gbk",$con))
 $res_users = mysql_query("SELECT * FROM `tb_user` ORDER BY `id`");
 $users = array();
 $starttime=time();
+echo "Senor 森 贴吧自动签到系统开始工作。\n服务器：    ".$_SERVER['COMPUTERNAME']."\n";
 echo "开始时间： ".date("H:i:s",$starttime)."\n";
 while($row = mysql_fetch_array($res_users))
 {
