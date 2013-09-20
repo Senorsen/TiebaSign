@@ -49,7 +49,7 @@ int main()
 		}
 		isrun = 1;
 		ly = year,lm = month,ld = day,lmin = min,lh = hour,ls = sec;
-		Sleep(1000);
+		Sleep(100);
 	}
 	return 0;
 }
