@@ -23,9 +23,11 @@ while($row = mysql_fetch_array($res_users))
 {
     echo "»ñÈ¡£º".$row['desc'];
     $alltb_o = NULL;
-    while(is_null($alltb_o))
+    $i = 5;
+    while((is_null($alltb_o)||count($alltb_o->tbn)==0)&&$i--)
     {
         $alltb_o = gettb($row['cookies'],$row['filter']);
+        
     }
     echo " - ".count($alltb_o->tbn)."\n";
     if(count($alltb_o->tbn)==0) echo "-----------µÇÂ¼×´Ì¬Ê§Ð§£¿\n";
