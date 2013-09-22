@@ -14,7 +14,9 @@ Save your 'baidu tieba' account info here.
 
 Then open the php in cosole mode  
 (Manual: )    
-e.g. in windows:(if the folder of php.exe __IS in your PATH__ ) `php exectbs.php`    
+e.g. in windows:(if the folder of php.exe __IS in your PATH__ )    
+`php exectbs.php cachetb` to cache tieba list first, then:   
+`php exectbs.php`    
 (Auto: )   
 use windows.cpp (P.S. it's for windows);in linux can use croontab.   
 
