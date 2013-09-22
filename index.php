@@ -12,12 +12,13 @@ var now = new DateTime();
 var tstxt='';
 $(function(){
     $.ajaxSetup({async:true});
+    $("#time").val('今天-'+now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+0);
     tstxt = $("#time").val();
     var s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour();
     $cache = $('#cache-log');
     $sign = $('#sign-log');
     ra = function(){var a = s.match(/^\d+-\d+-\d+/)[0];$cache.load('log-'+a);};
-    rb = function(){now = new DateTime();if($('#time').val() == '' || $('#time').val() == tstxt)s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour();else s=$('#time').val();$sign.load('log-'+s,'',function(){setTimeout("if(is_b) document.body.scrollTop = document.body.scrollHeight;",100);});};
+    rb = function(){now = new DateTime();if($('#time').val() == '' || /今天/.test($('#time').val())){s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+0;s2='今天-'+s;if($('#time').val() != s2)$('#time').val(s2);}else s=$('#time').val();if(/全部签到完成/.test($sign.html()))return;$sign.load('log-'+s,'',function(){setTimeout("if(is_b) document.body.scrollTop = document.body.scrollHeight;",100);});};
     setInterval("$('#current-time').html(now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour());",1000);
     ra();
     rb();
