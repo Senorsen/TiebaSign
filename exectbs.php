@@ -38,6 +38,7 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
         array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'cookies'=>$row['cookies'],'filter'=>$row['filter'],'alltb'=>$alltb_o));
     }
     fwrite(fopen("tbcache.serialize","w"),serialize($users));
+    echo "获取完毕\n-------------------\n";
 } else {
     //Tieba Sign
     echo "模式：签到\n";
@@ -46,8 +47,8 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
     {
         echo "获取缓存失败！正在尝试重新读取\n^---------------------------\n";
         system("php exectbs.php cachetb");
+        echo "\n-------------------------------------$\n";
     }
-    echo "\n-------------------------------------$\n";
     for($i=0;$i<count($users);$i++)
     {
         printf("%s\t%s%-30s",date("H:i:s"),"当前签到：",$users[$i]->desc);

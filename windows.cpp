@@ -81,12 +81,25 @@ int main()
 			*/
 			if (hour==23 && lh != 23)
 			{
-				sprintf(tmpbuf,syscac,year,day,month);
+				int ty,tm,td;
+				td=day+1;
+				tm=month;
+				ty=year;
+				switch(tm)
+				{
+					case 1:case 3:case 5:case 7:case 8:case 10:case 12:
+						if(td>31) {td=1;tm++;if(tm>12) {ty++;tm=1;}}break;
+					case 4:case 6:case 9:case 11:
+						if(td>30) {td=1;tm++;}break;
+					case 2:
+						if(ty%100==0){if(ty%400==0)if(td>29){td=1;tm++;}}else if(ty%4==0)if(td>28){td=1;tm++;}
+				}
+				sprintf(tmpbuf,syscac,ty,tm,td);
 				system(tmpbuf);
 			}
 			if (min == 0 && lm != 0)
 			{
-				sprintf(tmpbuf,syscom,year,day,month,hour);
+				sprintf(tmpbuf,syscom,year,month,day,hour);
 				system(tmpbuf);
 			}
 		}
