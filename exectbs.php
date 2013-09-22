@@ -33,7 +33,7 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
             $alltb_o = gettb($row['cookies'],$row['filter']);
             
         }
-        echo " - ".count($alltb_o->tbn)."\n";
+        echo " - ".count($alltb_o->tbn)." - ".$alltb_o->valid."\n";
         if(count($alltb_o->tbn)==0) echo "-----------登录状态失效？\n";
         array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'cookies'=>$row['cookies'],'filter'=>$row['filter'],'alltb'=>$alltb_o));
     }
@@ -57,7 +57,7 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
         $tbs = $users[$i]->alltb->tbs;
         $filter = $users[$i]->filter;
         $cookies = $users[$i]->cookies;
-        printf("贴吧数：%3d\n", $cnt);
+        printf("总贴吧数：%3d        过滤后：%3d\n", $cnt, $users[$i]->alltb->valid);
         echo "-----------------\n";
         for($j=0;$j<$cnt;$j++)
         {
@@ -151,12 +151,15 @@ function gettb($cookies,$filter)
     $str = $matches[1];
     $tbn_obj = json_decode($str);
     if(is_null($tbn_obj)) return (object)array('tbs'=>'','tbn'=>array());
+    $valid = 0;
     for($i=0;$i<count($tbn_obj);$i++)
     {
-        array_push($tbn, (object)array('fid'=>$tbn_obj[$i]->forum_id,'tb'=>mb_convert_encoding($tbn_obj[$i]->forum_name,"gbk","utf-8"),'level'=>isset($tbn_obj[$i]->level_id)?$tbn_obj[$i]->level_id:0,'exp'=>isset($tbn_obj[$i]->cur_score)?$tbn_obj[$i]->cur_score:0));
+        $this_tb = (object)array('fid'=>$tbn_obj[$i]->forum_id,'tb'=>mb_convert_encoding($tbn_obj[$i]->forum_name,"gbk","utf-8"),'level'=>isset($tbn_obj[$i]->level_id)?$tbn_obj[$i]->level_id:0,'exp'=>isset($tbn_obj[$i]->cur_score)?$tbn_obj[$i]->cur_score:0);
+        array_push($tbn, $this_tb);
+        if(UserFilter($this_tb->tb,$this_tb->level,$this_tb->exp,$filter)) $valid++;
     }
     if(count($tbn)>0)expsort(0,count($tbn)-1,$tbn);  //按经验值排序
-    return (object)array('tbs'=>$tbs,'tbn'=>$tbn);
+    return (object)array('tbs'=>$tbs,'tbn'=>$tbn, 'valid'=>$valid);
 }
 function expsort($l,$r,&$a)
 {

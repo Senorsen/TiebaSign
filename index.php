@@ -8,16 +8,20 @@
 <script src="datetime.js"></script>
 <script>
 var is_b = 0;
+var now = new DateTime();
+var tstxt='';
 $(function(){
-    var now = new DateTime();
+    $.ajaxSetup({async:true});
+    tstxt = $("#time").val();
     var s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour();
     $cache = $('#cache-log');
     $sign = $('#sign-log');
     ra = function(){var a = s.match(/^\d+-\d+-\d+/)[0];$cache.load('log-'+a);};
-    rb = function(){now = new DateTime();if($('#time').val() == 'default')s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour();else s=$('#time').val();$sign.load('log-'+s,'',function(){setTimeout("if(is_b) document.body.scrollTop = document.body.scrollHeight;",100);});};
+    rb = function(){now = new DateTime();if($('#time').val() == '' || $('#time').val() == tstxt)s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour();else s=$('#time').val();$sign.load('log-'+s,'',function(){setTimeout("if(is_b) document.body.scrollTop = document.body.scrollHeight;",100);});};
+    setInterval("$('#current-time').html(now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour());",1000);
     ra();
     rb();
-    setInterval(ra,10*1000);
+    setInterval(ra,3*1000);
     setInterval(rb,1000);
     $btn = $('#is-btn');
     $isb = $('#is-b');
@@ -27,7 +31,8 @@ $(function(){
 </head>
 
 <body>
-<input id="time" value="default">
+当前时间：<div id="current-time"></div>
+<input id="time" value="这里可以改成你想看的时间，清空则为当前时间" maxlength="200" style="width:300px">
 <div id="cache-log"></div>
 <hr>
 <div id="sign-log"></div>
