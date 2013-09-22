@@ -98,12 +98,14 @@ function sign($cookies,$tbs,$fid,$tb)
     $cookies_spl=$cookies.';';
     preg_match('/BDUSS=(.+?);/',$cookies_spl,$match_ck);
     $bduss=$match_ck[1];
+    $imei_hash = strtolower(md5($bduss));
     $postdata=array(
                 "BDUSS"=>$bduss,
                 "_client_id"=>"wappc_1378485686660_60",
                 "_client_type"=>"2",
                 "_client_version"=>"4.2.2",
-                "_phone_imei"=>"540b43b59d21b7a48aaaaad31b08e9a5",
+                "_phone_imei"=>$imei_hash,
+                //"_phone_imei"=>"540b43b59d21b7a48aaaaad31b08e9a5",
                 "fid"=>$fid,
                 "kw"=>mb_convert_encoding($tb,"utf-8","gbk"),
                 "net_type"=>3,
