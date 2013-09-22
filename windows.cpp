@@ -9,15 +9,32 @@ using namespace std;
 
 int main()
 {
-	char syscom[] = "php exectbs.php >> log.txt";
-	char syscac[] = "php exectbs.php cachetb >> log.txt";
+	char syscom[] = "php exectbs.php > log/log.%d-%d-%d-%d.txt";
+	char syscac[] = "php exectbs.php cachetb > log/log.%d-%d-%d.txt";
+	system("md log");
 	struct tm *newtime;
 	char tmpbuf[128];
 	time_t lt1;
 	int ly = 0, lm = 0, ld = 0, lh, lmin, ls;
 	int isrun = 0;
-	system(syscac);
-	system(syscom);
+	time(&lt1);
+	newtime = localtime(&lt1);
+	strftime(tmpbuf, 128, "%Y", newtime);
+	int year = atoi(tmpbuf);
+	strftime(tmpbuf, 128, "%d", newtime);
+	int day=atoi(tmpbuf);
+	strftime(tmpbuf, 128, "%m", newtime);
+	int month = atoi(tmpbuf);
+	strftime(tmpbuf, 128, "%H", newtime);
+	int hour = atoi(tmpbuf);
+	strftime(tmpbuf, 128, "%M", newtime);
+	int min = atoi(tmpbuf);
+	strftime(tmpbuf, 128, "%S", newtime);
+	int sec = atoi(tmpbuf);
+	sprintf(tmpbuf,syscac,year,month,day);
+	system(tmpbuf);
+	sprintf(tmpbuf,syscom,year,month,day,hour);
+	system(tmpbuf);	
 	while (1)
 	{
 		time(&lt1);
@@ -64,11 +81,13 @@ int main()
 			*/
 			if (hour==23 && lh != 23)
 			{
-				system(syscac);
+				sprintf(tmpbuf,syscac,year,day,month);
+				system(tmpbuf);
 			}
 			if (min == 0 && lm != 0)
 			{
-				system(syscom);
+				sprintf(tmpbuf,syscom,year,day,month,hour);
+				system(tmpbuf);
 			}
 		}
 		isrun = 1;
