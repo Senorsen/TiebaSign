@@ -9,12 +9,14 @@ using namespace std;
 
 int main()
 {
-	char syscom[] = "php.exe exectbs.php > log.txt";
+	char syscom[] = "php exectbs.php >> log.txt";
+	char syscac[] = "php exectbs.php cachetb >> log.txt";
 	struct tm *newtime;
 	char tmpbuf[128];
 	time_t lt1;
 	int ly = 0, lm = 0, ld = 0, lh, lmin, ls;
 	int isrun = 0;
+	system(syscac);
 	system(syscom);
 	while (1)
 	{
@@ -34,6 +36,7 @@ int main()
 		int sec = atoi(tmpbuf);
 		if (isrun)
 		{
+			/*
 			if (day != ld)
 			{
 				system(syscom);
@@ -55,6 +58,15 @@ int main()
 				system(syscom);
 			}
 			else if (hour == 23 && lh != 23)
+			{
+				system(syscom);
+			}
+			*/
+			if (hour==23 && lh != 23)
+			{
+				system(syscac);
+			}
+			if (min == 0 && lm != 0)
 			{
 				system(syscom);
 			}

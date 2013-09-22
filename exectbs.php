@@ -19,61 +19,77 @@ $users = array();
 $starttime=time();
 echo "Senor 森 贴吧自动签到系统开始工作。\n服务器：    ".$_SERVER['COMPUTERNAME']."\n";
 echo "开始时间： ".date("H:i:s",$starttime)."\n";
-while($row = mysql_fetch_array($res_users))
+if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
 {
-    echo "获取：".$row['desc'];
-    $alltb_o = NULL;
-    $i = 5;
-    while((is_null($alltb_o)||count($alltb_o->tbn)==0)&&$i--)
+    //Tieba info Cache
+    echo "模式：缓存贴吧……\n";
+    while($row = mysql_fetch_array($res_users))
     {
-        $alltb_o = gettb($row['cookies'],$row['filter']);
-        
-    }
-    echo " - ".count($alltb_o->tbn)."\n";
-    if(count($alltb_o->tbn)==0) echo "-----------登录状态失效？\n";
-    array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'cookies'=>$row['cookies'],'filter'=>$row['filter'],'alltb'=>$alltb_o));
-}
-for($i=0;$i<count($users);$i++)
-{
-    printf("%s\t%s%-30s",date("H:i:s"),"当前签到：",$users[$i]->desc);
-    $cnt = count($users[$i]->alltb->tbn);
-    $id = $users[$i]->id;
-    $tbs = $users[$i]->alltb->tbs;
-    $filter = $users[$i]->filter;
-    $cookies = $users[$i]->cookies;
-    printf("贴吧数：%3d\n", $cnt);
-    echo "-----------------\n";
-    for($j=0;$j<$cnt;$j++)
-    {
-        $tb = $users[$i]->alltb->tbn[$j]->tb;
-        $fid = $users[$i]->alltb->tbn[$j]->fid;
-        $level = $users[$i]->alltb->tbn[$j]->level;
-        $exp = $users[$i]->alltb->tbn[$j]->exp;
-        do
+        echo "获取：".$row['desc'];
+        $alltb_o = NULL;
+        $i = 5;
+        while((is_null($alltb_o)||count($alltb_o->tbn)==0)&&$i--)
         {
-            if(!UserFilter($tb,$level,$exp,$filter))
-            {
-                echo "    跳过  $tb\n";
-                continue;
-            }
-            printf("%-30s","    签到  $tb ");
-            $ret = sign($cookies,$tbs,$fid,$tb);
-            if($ret->no!=2)
-            {
-                echo "".$ret->str."\n";
-            }
-            else
-            {
-                echo "$ret->str|$ret->code\n";
-                if($ret->code==160008) sleep(2);
-            }
-            sleep(1);
-        }while($ret->no==2);
+            $alltb_o = gettb($row['cookies'],$row['filter']);
+            
+        }
+        echo " - ".count($alltb_o->tbn)."\n";
+        if(count($alltb_o->tbn)==0) echo "-----------登录状态失效？\n";
+        array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'cookies'=>$row['cookies'],'filter'=>$row['filter'],'alltb'=>$alltb_o));
     }
-    mysql_query("UPDATE `tb_user` SET `last`='".date('Y-m-d')."' WHERE `id`=$id");
-    echo "\n";
+    fwrite(fopen("tbcache.serialize","w"),serialize($users));
+} else {
+    //Tieba Sign
+    echo "模式：签到\n";
+    $users = unserialize(fread(fopen("tbcache.serialize","r"),10000000));
+    if(is_null($users))
+    {
+        echo "获取缓存失败！正在尝试重新读取\n^---------------------------\n";
+        system("php exectbs.php cachetb");
+    }
+    echo "\n-------------------------------------$\n";
+    for($i=0;$i<count($users);$i++)
+    {
+        printf("%s\t%s%-30s",date("H:i:s"),"当前签到：",$users[$i]->desc);
+        $cnt = count($users[$i]->alltb->tbn);
+        $id = $users[$i]->id;
+        $tbs = $users[$i]->alltb->tbs;
+        $filter = $users[$i]->filter;
+        $cookies = $users[$i]->cookies;
+        printf("贴吧数：%3d\n", $cnt);
+        echo "-----------------\n";
+        for($j=0;$j<$cnt;$j++)
+        {
+            $tb = $users[$i]->alltb->tbn[$j]->tb;
+            $fid = $users[$i]->alltb->tbn[$j]->fid;
+            $level = $users[$i]->alltb->tbn[$j]->level;
+            $exp = $users[$i]->alltb->tbn[$j]->exp;
+            do
+            {
+                if(!UserFilter($tb,$level,$exp,$filter))
+                {
+                    echo "    跳过  $tb\n";
+                    continue;
+                }
+                printf("%-30s","    签到  $tb ");
+                $ret = sign($cookies,$tbs,$fid,$tb);
+                if($ret->no!=2)
+                {
+                    echo "".$ret->str."\n";
+                }
+                else
+                {
+                    echo "$ret->str|$ret->code\n";
+                    if($ret->code==160008) sleep(2);
+                }
+                sleep(1);
+            }while($ret->no==2);
+        }
+        mysql_query("UPDATE `tb_user` SET `last`='".date('Y-m-d')."' WHERE `id`=$id");
+        echo "\n";
+    }
+    echo date("H:i:s")."    全部签到完成，用时 ".date("i:s",time()-$starttime)."\n";
 }
-echo date("H:i:s")."    全部签到完成，用时 ".date("i:s",time()-$starttime)."\n";
 function sign($cookies,$tbs,$fid,$tb)
 {
     $tbsurl='http://c.tieba.baidu.com/c/c/forum/sign';
