@@ -186,6 +186,7 @@ function curlFetch($url, $cookie = "", $data = null, $ua = "")
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
 	}
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 	$str = curl_exec($ch);
 	curl_close($ch);
 	return mb_convert_encoding($str,"GBK","UTF-8");
