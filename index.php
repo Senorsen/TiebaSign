@@ -14,11 +14,11 @@ $(function(){
     $cache = $('#cache-log');
     $sign = $('#sign-log');
     ra = function(){var a = s.match(/^\d+-\d+-\d+/)[0];$cache.load('log-'+a);};
-    rb = function(){if($('#time').val() == 'default')s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour();$sign.load('log-'+s,'',function(){setTimeout("if(is_b) document.body.scrollTop = document.body.scrollHeight;",100);});};
+    rb = function(){now = new DateTime();if($('#time').val() == 'default')s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour();$sign.load('log-'+s,'',function(){setTimeout("if(is_b) document.body.scrollTop = document.body.scrollHeight;",100);});};
     ra();
     rb();
-    setInterval(ra,3600*1000);
-    setInterval(rb,3000);
+    setInterval(ra,10*1000);
+    setInterval(rb,1000);
     $btn = $('#is-btn');
     $isb = $('#is-b');
     $btn.hover(function(){$(this).stop(0,1).animate({opacity:1});},function(){$(this).stop(0,1).animate({opacity:0.5});}).click(function(){$(this).css("opacity","0.4");setTimeout(function(){$btn.css("opacity","1")},50);is_b ^= 1;$isb.html(is_b);});
