@@ -14,7 +14,7 @@ $(function(){
     $cache = $('#cache-log');
     $sign = $('#sign-log');
     ra = function(){var a = s.match(/^\d+-\d+-\d+/)[0];$cache.load('log-'+a);};
-    rb = function(){now = new DateTime();if($('#time').val() == 'default')s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour();$sign.load('log-'+s,'',function(){setTimeout("if(is_b) document.body.scrollTop = document.body.scrollHeight;",100);});};
+    rb = function(){now = new DateTime();if($('#time').val() == 'default')s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour();else s=$('#time').val();$sign.load('log-'+s,'',function(){setTimeout("if(is_b) document.body.scrollTop = document.body.scrollHeight;",100);});};
     ra();
     rb();
     setInterval(ra,10*1000);
