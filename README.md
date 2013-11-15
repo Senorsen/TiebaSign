@@ -1,7 +1,7 @@
 TiebaSign
 =========
 
-php script with php.exe .
+php script with php (linux command line).
 
 
 Usage
@@ -12,13 +12,24 @@ This table has four fields: `id`(A_I), `desc`(user description; nickname), `cook
 Type: int, varchar(255), varchar(1024), varchar(50)  
 Save your 'baidu tieba' account info here.  
 
+(See tbs.sql)
+
 Then open the php in cosole mode  
 (Manual: )    
-e.g. in windows:(if the folder of php.exe __IS in your PATH__ )    
+
 `php exectbs.php cachetb` to cache tieba list first, then:   
 `php exectbs.php`    
+
 (Auto: )   
-use windows.cpp (P.S. it's for windows);in linux can use croontab.   
+/home/tbs/autotbs.sh:   
+
+    php exectbs.php cachetb > ./log/log-today-cache.log
+    php exectbs.php > ./log/log-today-sign.log
+
+
+crontab -e:   
+
+    * */4 * * * 
 
 
 That's all.  
