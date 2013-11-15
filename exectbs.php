@@ -1,5 +1,5 @@
 <?php
-set_time_limit(3600);	//Ò»Ğ¡Ê±Ê±¼ä
+set_time_limit(36000);	//ä¸€å°æ—¶æ—¶é—´
 date_default_timezone_set('Asia/Shanghai');
 //###########################################################################################
     require "conn.php";         // $con = mysql_connect("localhost","username","password");
@@ -8,24 +8,25 @@ if (!$con)
 {
     die('Could not connect: ' . mysql_error());
 }
-$db="test";
+$db="senorsen";
 mysql_select_db($db, $con);
-if(!mysql_set_charset("gbk",$con))
+if(!mysql_set_charset("utf8",$con))
 {
-    echo "Éè¶¨×Ö·û¼¯Ê§°Ü;an error occured when program set charset";
+    echo "è®¾å®šå­—ç¬¦é›†å¤±è´¥;an error occured when program set charset";
 }
 $res_users = mysql_query("SELECT * FROM `tb_user` ORDER BY `id`");
 $users = array();
 $starttime=time();
-echo "Senor É­ Ìù°É×Ô¶¯Ç©µ½ÏµÍ³¿ªÊ¼¹¤×÷¡£\n·şÎñÆ÷£º    ".$_SERVER['COMPUTERNAME']."\n";
-echo "¿ªÊ¼Ê±¼ä£º ".date("H:i:s",$starttime)."\n";
+$usertime = array();
+echo "Senor æ£® è´´å§è‡ªåŠ¨ç­¾åˆ°ç³»ç»Ÿå¼€å§‹å·¥ä½œã€‚\næœåŠ¡å™¨ï¼š    ".$_SERVER['COMPUTERNAME']."\n";
+echo "å¼€å§‹æ—¶é—´ï¼š ".date("H:i:s",$starttime)."\n";
 if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
 {
     //Tieba info Cache
-    echo "Ä£Ê½£º»º´æÌù°É¡­¡­\n";
+    echo "æ¨¡å¼ï¼šç¼“å­˜è´´å§â€¦â€¦\n";
     while($row = mysql_fetch_array($res_users))
     {
-        echo "»ñÈ¡£º".$row['desc'];
+        echo "è·å–ï¼š".$row['desc'];
         $alltb_o = NULL;
         $i = 5;
         while((is_null($alltb_o)||count($alltb_o->tbn)==0)&&$i--)
@@ -34,30 +35,32 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
             
         }
         echo " - ".count($alltb_o->tbn)." - ".$alltb_o->valid."\n";
-        if(count($alltb_o->tbn)==0) echo "-----------µÇÂ¼×´Ì¬Ê§Ğ§£¿\n";
+        if(count($alltb_o->tbn)==0) echo "-----------ç™»å½•çŠ¶æ€å¤±æ•ˆï¼Ÿ\n";
         array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'cookies'=>$row['cookies'],'filter'=>$row['filter'],'alltb'=>$alltb_o));
     }
     fwrite(fopen("tbcache.serialize","w"),serialize($users));
-    echo "»ñÈ¡Íê±Ï\n-------------------\n";
+    echo "è·å–å®Œæ¯•\n-------------------\n";
 } else {
     //Tieba Sign
-    echo "Ä£Ê½£ºÇ©µ½\n";
+    echo "æ¨¡å¼ï¼šç­¾åˆ°\n";
     $users = unserialize(fread(fopen("tbcache.serialize","r"),10000000));
     if(is_null($users))
     {
-        echo "»ñÈ¡»º´æÊ§°Ü£¡ÕıÔÚ³¢ÊÔÖØĞÂ¶ÁÈ¡\n^---------------------------\n";
+        echo "è·å–ç¼“å­˜å¤±è´¥ï¼æ­£åœ¨å°è¯•é‡æ–°è¯»å–\n^---------------------------\n";
         system("php exectbs.php cachetb");
         echo "\n-------------------------------------$\n";
     }
     for($i=0;$i<count($users);$i++)
     {
-        printf("%s\t%s%-30s",date("H:i:s"),"µ±Ç°Ç©µ½£º",$users[$i]->desc);
+//        sleep(rand(2, 5));
+        //if($i<count($users)-1) continue;
+        printf("%s\t%s%-30s",date("H:i:s"),"å½“å‰ç­¾åˆ°ï¼š",$users[$i]->desc);
         $cnt = count($users[$i]->alltb->tbn);
         $id = $users[$i]->id;
         $tbs = $users[$i]->alltb->tbs;
         $filter = $users[$i]->filter;
         $cookies = $users[$i]->cookies;
-        printf("×ÜÌù°ÉÊı£º%3d        ¹ıÂËºó£º%3d\n", $cnt, $users[$i]->alltb->valid);
+        printf("æ€»è´´å§æ•°ï¼š%3d        è¿‡æ»¤åï¼š%3d\n", $cnt, $users[$i]->alltb->valid);
         echo "-----------------\n";
         for($j=0;$j<$cnt;$j++)
         {
@@ -65,14 +68,15 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
             $fid = $users[$i]->alltb->tbn[$j]->fid;
             $level = $users[$i]->alltb->tbn[$j]->level;
             $exp = $users[$i]->alltb->tbn[$j]->exp;
+            $ForceStop = false;
             do
             {
                 if(!UserFilter($tb,$level,$exp,$filter))
                 {
-                    echo "    Ìø¹ı  $tb\n";
+                    echo "    è·³è¿‡  $tb\n";
                     continue;
                 }
-                printf("%-30s","    Ç©µ½  $tb ");
+                printf("%-30s","    ç­¾åˆ°  $tb ");
                 $ret = sign($cookies,$tbs,$fid,$tb);
                 if($ret->no!=2)
                 {
@@ -83,13 +87,13 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
                     echo "$ret->str|$ret->code\n";
                     if($ret->code==160008) sleep(2);
                 }
-                sleep(1);
+//                sleep(rand(5, 8));
             }while($ret->no==2);
         }
         mysql_query("UPDATE `tb_user` SET `last`='".date('Y-m-d')."' WHERE `id`=$id");
         echo "\n";
     }
-    echo date("H:i:s")."    È«²¿Ç©µ½Íê³É£¬ÓÃÊ± ".date("i:s",time()-$starttime)."\n";
+    echo date("H:i:s")."    å…¨éƒ¨ç­¾åˆ°å®Œæˆï¼Œç”¨æ—¶ ".date("i:s",time()-$starttime)."\n";
 }
 function sign($cookies,$tbs,$fid,$tb)
 {
@@ -99,6 +103,7 @@ function sign($cookies,$tbs,$fid,$tb)
     preg_match('/BDUSS=(.+?);/',$cookies_spl,$match_ck);
     $bduss=$match_ck[1];
     $imei_hash = strtolower(md5($bduss));
+    //echo $cookies;
     $postdata=array(
                 "BDUSS"=>$bduss,
                 "_client_id"=>"wappc_1378485686660_60",
@@ -107,7 +112,7 @@ function sign($cookies,$tbs,$fid,$tb)
                 "_phone_imei"=>$imei_hash,
                 //"_phone_imei"=>"540b43b59d21b7a48aaaaad31b08e9a5",
                 "fid"=>$fid,
-                "kw"=>mb_convert_encoding($tb,"utf-8","gbk"),
+                "kw"=>$tb,
                 "net_type"=>3,
                 "tbs"=>$tbs
                 );
@@ -119,27 +124,27 @@ function sign($cookies,$tbs,$fid,$tb)
     $str=curlFetch($tbsurl,$myheader[0],$postdata,$myheader[1]);
     $obj=json_decode($str,true);
     if(is_null($obj))
-        return (object)array('no'=>2,'str'=>'Î´Öª´íÎó NULL','code'=>0);
+        return (object)array('no'=>2,'str'=>'æœªçŸ¥é”™è¯¯ NULL','code'=>0);
     if($obj["error_code"]==0)
     {
-        return (object)array('no'=>0,'str'=>'¡öÔö¼Ó'.$obj["user_info"]["sign_bonus_point"].'¾­ÑéÖµ');
+        return (object)array('no'=>0,'str'=>'â– å¢åŠ '.$obj["user_info"]["sign_bonus_point"].'ç»éªŒå€¼');
     }
     else if($obj["error_code"]==160002)
     {
-        return (object)array('no'=>-1,'str'=>'¡ö'.mb_convert_encoding($obj["error_msg"],"gbk","utf-8"),'code'=>$obj["error_code"]);
+        return (object)array('no'=>-1,'str'=>'â– '.$obj["error_msg"],'code'=>$obj["error_code"]);
     }
     else if($obj['error_code']==160004)
     {
-        return (object)array('no'=>1,'str'=>'¡ö±¾°ÉÎŞÇ©µ½');
+        return (object)array('no'=>1,'str'=>'â– æœ¬å§æ— ç­¾åˆ°');
     }
     else
     {
-        return (object)array('no'=>2,'str'=>'¡õ'.mb_convert_encoding($obj["error_msg"],"gbk","utf-8"),'code'=>$obj["error_code"]);
+        return (object)array('no'=>2,'str'=>'Unknown '.$obj["error_msg"],'code'=>$obj["error_code"]);
     }
 }
 function gettb($cookies,$filter)
 {
-    //·µ»Øtbs¼°tbn
+    //è¿”å›tbsåŠtbn
     $tbs_obj = json_decode(curlFetch("http://tieba.baidu.com/dc/common/tbs","$cookies"));
     $tbs = $tbs_obj->tbs;
     $is_login = $tbs_obj->is_login;
@@ -154,11 +159,11 @@ function gettb($cookies,$filter)
     $valid = 0;
     for($i=0;$i<count($tbn_obj);$i++)
     {
-        $this_tb = (object)array('fid'=>$tbn_obj[$i]->forum_id,'tb'=>mb_convert_encoding($tbn_obj[$i]->forum_name,"gbk","utf-8"),'level'=>isset($tbn_obj[$i]->level_id)?$tbn_obj[$i]->level_id:0,'exp'=>isset($tbn_obj[$i]->cur_score)?$tbn_obj[$i]->cur_score:0);
+        $this_tb = (object)array('fid'=>$tbn_obj[$i]->forum_id,'tb'=>$tbn_obj[$i]->forum_name,'level'=>isset($tbn_obj[$i]->level_id)?$tbn_obj[$i]->level_id:0,'exp'=>isset($tbn_obj[$i]->cur_score)?$tbn_obj[$i]->cur_score:0);
         array_push($tbn, $this_tb);
         if(UserFilter($this_tb->tb,$this_tb->level,$this_tb->exp,$filter)) $valid++;
     }
-    if(count($tbn)>0)expsort(0,count($tbn)-1,$tbn);  //°´¾­ÑéÖµÅÅĞò
+    if(count($tbn)>0)expsort(0,count($tbn)-1,$tbn);  //æŒ‰ç»éªŒå€¼æ’åº
     return (object)array('tbs'=>$tbs,'tbn'=>$tbn, 'valid'=>$valid);
 }
 function expsort($l,$r,&$a)
@@ -179,13 +184,13 @@ function expsort($l,$r,&$a)
 function UserFilter($tbname,$lv,$ex,$filter){$fr=1;eval($filter);return $fr;}
 function curlFetch($url, $cookie = "", $data = null, $ua = "")
 {
-	$ch = curl_init(mb_convert_encoding($url,"UTF-8","GBK"));
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // ·µ»Ø×Ö·û´®£¬¶ø·ÇÖ±½ÓÊä³ö
-	curl_setopt($ch, CURLOPT_HEADER, false);   // ²»·µ»Øheader²¿·Ö
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);   // ÉèÖÃsocketÁ¬½Ó³¬Ê±Ê±¼ä
+	$ch = curl_init($url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // è¿”å›å­—ç¬¦ä¸²ï¼Œè€Œéç›´æ¥è¾“å‡º
+	curl_setopt($ch, CURLOPT_HEADER, false);   // ä¸è¿”å›headeréƒ¨åˆ†
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);   // è®¾ç½®socketè¿æ¥è¶…æ—¶æ—¶é—´
 	/*if (!empty($referer))
 	{
-		curl_setopt($ch, CURLOPT_REFERER, $referer);   // ÉèÖÃÒıÓÃÍøÖ·
+		curl_setopt($ch, CURLOPT_REFERER, $referer);   // è®¾ç½®å¼•ç”¨ç½‘å€
 	}*/
 	if (!empty($cookie))
 	{
@@ -211,6 +216,6 @@ function curlFetch($url, $cookie = "", $data = null, $ua = "")
     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 	$str = curl_exec($ch);
 	curl_close($ch);
-	return mb_convert_encoding($str,"GBK","UTF-8");
+	return $str;
 }
 ?>

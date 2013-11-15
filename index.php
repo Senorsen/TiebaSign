@@ -17,8 +17,8 @@ $(function(){
     var s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour();
     $cache = $('#cache-log');
     $sign = $('#sign-log');
-    ra = function(){var a = s.match(/^\d+-\d+-\d+/)[0];$cache.load('log-'+a);};
-    rb = function(){now = new DateTime();if($('#time').val() == '' || /今天/.test($('#time').val())){s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+0;s2='今天-'+s;if($('#time').val() != s2)$('#time').val(s2);if(/全部签到完成/.test($sign.html()))return;}else s=$('#time').val();$sign.load('log-'+s,'',function(){setTimeout("if(is_b) document.body.scrollTop = document.body.scrollHeight;",100);});};
+    ra = function(){var a = s.match(/^\d+-\d+-\d+/)[0];$cache.load('log-today-cache');};
+    rb = function(){now = new DateTime();if($('#time').val() == '' || /今天/.test($('#time').val())){s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+0;s2='今天-'+s;if($('#time').val() != s2)$('#time').val(s2);if(/全部签到完成/.test($sign.html()))return;}else s=$('#time').val();$sign.load('log-today-sign','',function(){setTimeout("if(is_b) document.body.scrollTop = document.body.scrollHeight;",100);});};
     setInterval("$('#current-time').html(now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour());",1000);
     ra();
     rb();
@@ -33,7 +33,7 @@ $(function(){
 
 <body>
 当前时间：<div id="current-time"></div>
-<input id="time" value="这里可以改成你想看的时间，清空则为当前时间" maxlength="200" style="width:300px">
+<input type="hidden" id="time" value="这里可以改成你想看的时间，清空则为当前时间" maxlength="200" style="width:300px">
 <div id="cache-log"></div>
 <hr>
 <div id="sign-log"></div>
