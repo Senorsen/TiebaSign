@@ -18,7 +18,7 @@ $res_users = mysql_query("SELECT * FROM `tb_user` ORDER BY `id`");
 $users = array();
 $starttime=time();
 $usertime = array();
-echo "Senor 森 贴吧自动签到系统开始工作。\n服务器：    ".$_SERVER['COMPUTERNAME']."\n";
+echo "Senor 森 贴吧自动签到系统开始工作。\n服务器：    ".$_SERVER['SERVER_ADDR']."\n";
 echo "开始时间： ".date("Y-m-d H:i:s",$starttime)."\n";
 if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
 {
