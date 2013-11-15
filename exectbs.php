@@ -19,7 +19,7 @@ $users = array();
 $starttime=time();
 $usertime = array();
 echo "Senor 森 贴吧自动签到系统开始工作。\n服务器：    ".$_SERVER['SERVER_ADDR']."\n";
-echo "开始时间： ".date("Y-m-d H:i:s",$starttime)."\n";
+echo "开始时间： ".date("Y-m-d H:i:s D",$starttime)."\n";
 if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
 {
     //Tieba info Cache
@@ -42,7 +42,7 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
     echo "获取完毕\n-------------------\n";
 } else {
     //Tieba Sign
-    echo "模式：签到 ".date("Y-m-d H:i:s", time())." \n";
+    echo "模式：签到\n";
     $users = unserialize(fread(fopen("tbcache.serialize","r"),10000000));
     if(is_null($users))
     {
