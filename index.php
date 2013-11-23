@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <title>签到日志</title>
-<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script src="jquery.js"></script>
+<script src="jquery-migrate.js"></script>
 <script src="datetime.js"></script>
 <script>
 var is_b = 0;
