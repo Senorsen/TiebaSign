@@ -1,6 +1,5 @@
 
 # TiebaSign
-0 6 * * * sh /home/prj/tbautf8/autoctb.sh
-30 6 * * * sh /home/prj/tbautf8/autotbs.sh
+0 0 * * * sh /home/prj/tbautf8/autotbs.sh
 0 23 * * * sh /home/prj/tbautf8/autoctb.sh
 30 23 * * * sh /home/prj/tbautf8/autotbs.sh
