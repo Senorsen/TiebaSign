@@ -90,7 +90,6 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
 //                sleep(rand(5, 8));
             }while($ret->no==2);
         }
-        mysql_query("UPDATE `tb_user` SET `last`='".date('Y-m-d')."' WHERE `id`=$id");
         echo "\n";
     }
     echo date("H:i:s")."    全部签到完成，用时 ".date("i:s",time()-$starttime)."\n";
@@ -129,7 +128,7 @@ function sign($cookies,$tbs,$fid,$tb)
     {
         return (object)array('no'=>0,'str'=>'■增加'.$obj["user_info"]["sign_bonus_point"].'经验值');
     }
-    else if($obj["error_code"]==160002)
+    else if($obj["error_code"]==340010)
     {
         return (object)array('no'=>-1,'str'=>'■'.$obj["error_msg"],'code'=>$obj["error_code"]);
     }
