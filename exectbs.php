@@ -126,9 +126,10 @@ function sign($cookies,$tbs,$fid,$tb)
         return (object)array('no'=>2,'str'=>'未知错误 NULL','code'=>0);
     if($obj["error_code"]==0)
     {
+    var_dump($obj);
         return (object)array('no'=>0,'str'=>'■增加'.$obj["user_info"]["sign_bonus_point"].'经验值');
     }
-    else if($obj["error_code"]==340010)
+    else if(strpos($obj["error_msg"], '已经签过了') != FALSE)
     {
         return (object)array('no'=>-1,'str'=>'■'.$obj["error_msg"],'code'=>$obj["error_code"]);
     }
