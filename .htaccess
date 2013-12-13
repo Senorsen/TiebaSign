@@ -1,6 +1,6 @@
 AuthName "Senorsen's protected zone"
 Authtype Basic
-AuthUserFile pwdfile
+AuthUserFile ./pwdfile
 require user test
 
 RewriteEngine On
