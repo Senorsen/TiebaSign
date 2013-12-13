@@ -1,3 +1,8 @@
+AuthName "Senorsen's protected zone"
+Authtype Basic
+AuthUserFile pwdfile
+require user test
+
 RewriteEngine On
 
 # RewriteRule ^.*$ log.txt
