@@ -1,8 +1,9 @@
 AuthName "Senorsen's protected zone"
 Authtype Basic
 AuthUserFile /home/prj/tbs/.htpasswd
-RewriteEngine On
+Require valid-user
 
+RewriteEngine On
 # RewriteRule ^.*$ log.txt
 RewriteRule ^log-(.+)$ log.php?get=$1
 RewriteRule ^tbcache.serialize$ / [F]
