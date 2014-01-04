@@ -1,6 +1,6 @@
 log
 _notes
 conn.php
-pwdfile
+.htpasswd
 nohup.out
 tbcache.serialize
