@@ -1,3 +1,6 @@
+log
 _notes
 conn.php
 pwdfile
+nohup.out
+tbcache.serialize

@@ -1,30 +1,39 @@
-<?php
+<?php 
 set_time_limit(36000);	//一小时时间
-date_default_timezone_set('Asia/Shanghai');
+date_default_timezone_set('PRC');
 //###########################################################################################
-    require "conn.php";         // $con = mysql_connect("localhost","username","password");
+    require "../Conn/Conn.php";
 //###########################################################################################
-if (!$con)
+$db = @senor_conn();
+if (mysqli_connect_errno())
 {
-    die('Could not connect: ' . mysql_error());
+    echo('Could not connect: ' . mysqli_error());
 }
-$db="senorsen";
-mysql_select_db($db, $con);
-if(!mysql_set_charset("utf8",$con))
+else if(! @$db->set_charset("utf8"))
 {
-    echo "设定字符集失败;an error occured when program set charset";
+    echo("Could not connect: an error occured when program set charset");
 }
-$res_users = mysql_query("SELECT * FROM `tb_user` ORDER BY `id`");
+$result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
 $users = array();
 $starttime=time();
 $usertime = array();
-echo "Senor 森 贴吧自动签到系统开始工作。\n服务器：    ".$_SERVER['SERVER_ADDR']."\n";
+echo "Senor 森 贴吧自动签到系统开始工作。\n\n";
 echo "开始时间： ".date("Y-m-d H:i:s D",$starttime)."\n";
-if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
+if ($argc >= 2 && strcmp($argv[1],"cachetb")==0)
 {
     //Tieba info Cache
     echo "模式：缓存贴吧……\n";
-    while($row = mysql_fetch_array($res_users))
+    echo "---------------\n";
+    $rogue_n = array('浙江大学', '连云小森森');
+    $rogue = array();
+    foreach ($rogue_n as $value) {
+        echo "rogue-get: ".$value." = ";
+        $fid = getfid($value);
+        echo $fid."\n";
+        array_push($rogue, (object)array('tb' => $value, 'fid' => $fid, 'force' => 1));
+    }
+    echo "---------------\n";
+    while($row = $result->fetch_array())
     {
         echo "获取：".$row['desc'];
         $alltb_o = NULL;
@@ -32,10 +41,11 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
         while((is_null($alltb_o)||count($alltb_o->tbn)==0)&&$i--)
         {
             $alltb_o = gettb($row['cookies'],$row['filter']);
-            
         }
-        echo " - ".count($alltb_o->tbn)." - ".$alltb_o->valid."\n";
-        if(count($alltb_o->tbn)==0) echo "-----------登录状态失效？\n";
+        $alltb_o->tbn = array_merge($rogue, $alltb_o->tbn);
+        echo " - ".count($alltb_o->tbn)." - ".($alltb_o->valid+count($rogue))."\n";
+        if($alltb_o->is_login==0) echo "**** 登录状态失效！？\n";
+
         array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'cookies'=>$row['cookies'],'filter'=>$row['filter'],'alltb'=>$alltb_o));
     }
     fwrite(fopen("tbcache.serialize","w"),serialize($users));
@@ -43,11 +53,10 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
 } else {
     //Tieba Sign
     echo "模式：签到\n";
-    $users = unserialize(fread(fopen("tbcache.serialize","r"),10000000));
+    $users = unserialize(file_get_contents("tbcache.serialize"));
     if(is_null($users))
     {
-        echo "获取缓存失败！正在尝试重新读取\n^---------------------------\n";
-        system("php exectbs.php cachetb");
+        echo "获取缓存失败！(请联系您的系统管理员 >_<)\n";
         echo "\n-------------------------------------$\n";
     }
     for($i=0;$i<count($users);$i++)
@@ -55,6 +64,10 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
 //        sleep(rand(2, 5));
         //if($i<count($users)-1) continue;
         printf("%s\t%s%-30s",date("H:i:s"),"当前签到：",$users[$i]->desc);
+        if (!$users[$i]->alltb->is_login) {
+            echo " 未登录！？\n";
+            continue;
+        }
         $cnt = count($users[$i]->alltb->tbn);
         $id = $users[$i]->id;
         $tbs = $users[$i]->alltb->tbs;
@@ -66,17 +79,20 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
         {
             $tb = $users[$i]->alltb->tbn[$j]->tb;
             $fid = $users[$i]->alltb->tbn[$j]->fid;
-            $level = $users[$i]->alltb->tbn[$j]->level;
-            $exp = $users[$i]->alltb->tbn[$j]->exp;
-            $ForceStop = false;
-            do
-            {
-                if(!UserFilter($tb,$level,$exp,$filter))
+            if (!$users[$i]->alltb->tbn[$j]->force) {
+                $level = $users[$i]->alltb->tbn[$j]->level;
+                $exp = $users[$i]->alltb->tbn[$j]->exp;
+                $ForceStop = false;
+            }
+            $this_tb_sign_cnt = 0;
+            do {
+                if(!$users[$i]->alltb->tbn[$j]->force && !UserFilter($tb,$level,$exp,$filter))
                 {
                     echo "    跳过  $tb\n";
                     continue;
                 }
                 printf("%-30s","    签到  $tb ");
+                if ($users[$i]->alltb->tbn[$j]->force) echo "(Senorsen) ";
                 $ret = sign($cookies,$tbs,$fid,$tb);
                 if($ret->no!=2)
                 {
@@ -87,6 +103,8 @@ if ($argc == 2 && strcmp($argv[1],"cachetb")==0)
                     echo "$ret->str|$ret->code\n";
                     if($ret->code==160008) sleep(2);
                 }
+                $this_tb_sign_cnt++;
+                if ($this_tb_sign_cnt > 10) break;
 //                sleep(rand(5, 8));
             }while($ret->no==2);
         }
@@ -147,7 +165,7 @@ function gettb($cookies,$filter)
     $tbs_obj = json_decode(curlFetch("http://tieba.baidu.com/dc/common/tbs","$cookies"));
     $tbs = $tbs_obj->tbs;
     $is_login = $tbs_obj->is_login;
-    if(!$is_login) return (object)array('tbs'=>'','tbn'=>array());
+    if(!$is_login) return (object)array('tbs'=>'','tbn'=>array(), 'is_login' => 0);
     $tbn = array();
     $str = curlFetch("http://tieba.baidu.com/","$cookies");
     preg_match('/forums["][:](.+?[\]])/',$str,$matches);
@@ -158,12 +176,12 @@ function gettb($cookies,$filter)
     $valid = 0;
     for($i=0;$i<count($tbn_obj);$i++)
     {
-        $this_tb = (object)array('fid'=>$tbn_obj[$i]->forum_id,'tb'=>$tbn_obj[$i]->forum_name,'level'=>isset($tbn_obj[$i]->level_id)?$tbn_obj[$i]->level_id:0,'exp'=>isset($tbn_obj[$i]->cur_score)?$tbn_obj[$i]->cur_score:0);
+        $this_tb = (object)array('force'=>0,'fid'=>$tbn_obj[$i]->forum_id,'tb'=>$tbn_obj[$i]->forum_name,'level'=>isset($tbn_obj[$i]->level_id)?$tbn_obj[$i]->level_id:0,'exp'=>isset($tbn_obj[$i]->cur_score)?$tbn_obj[$i]->cur_score:0);
         array_push($tbn, $this_tb);
         if(UserFilter($this_tb->tb,$this_tb->level,$this_tb->exp,$filter)) $valid++;
     }
     if(count($tbn)>0)expsort(0,count($tbn)-1,$tbn);  //按经验值排序
-    return (object)array('tbs'=>$tbs,'tbn'=>$tbn, 'valid'=>$valid);
+    return (object)array('tbs'=>$tbs,'tbn'=>$tbn, 'valid'=>$valid, 'is_login' => 1);
 }
 function expsort($l,$r,&$a)
 {
@@ -181,6 +199,13 @@ function expsort($l,$r,&$a)
     if($i<$r) expsort($i,$r,$a);
 }
 function UserFilter($tbname,$lv,$ex,$filter){$fr=1;eval($filter);return $fr;}
+function getfid($tbname) {
+    $url = "http://wapp.baidu.com/f?kw=".urlencode($tbname);
+    $retstr = curlFetch($url);
+    preg_match('/ name="fid" value="(\d+)"\/>/', $retstr, $matches);
+    $fid = $matches[1];
+    return $fid;
+}
 function curlFetch($url, $cookie = "", $data = null, $ua = "")
 {
 	$ch = curl_init($url);
@@ -217,4 +242,3 @@ function curlFetch($url, $cookie = "", $data = null, $ua = "")
 	curl_close($ch);
 	return $str;
 }
-?>

@@ -1,8 +1,8 @@
 AuthName "Senorsen's protected zone"
 Authtype Basic
-AuthUserFile ./pwdfile
+AuthUserFile /home/prj/tbs/pwdfile
 require user test
-
+RewriteRule ^pwdfile / [F]
 RewriteEngine On
 
 # RewriteRule ^.*$ log.txt
