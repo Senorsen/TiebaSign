@@ -1,6 +1,14 @@
 <?php 
 set_time_limit(36000);	//一小时时间
 date_default_timezone_set('PRC');
+$users = array();
+$starttime=time();
+$usertime = array();
+echo "Senor 森 贴吧自动签到系统开始工作。\n\n";
+echo "开始时间： ".date("Y-m-d H:i:s D",$starttime)."\n";
+
+if ($argc >= 2 && strcmp($argv[1],"cachetb")==0)
+{
 //###########################################################################################
     require "../Conn/Conn.php";
 //###########################################################################################
@@ -14,13 +22,6 @@ else if(! @$db->set_charset("utf8"))
     echo("Could not connect: an error occured when program set charset");
 }
 $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
-$users = array();
-$starttime=time();
-$usertime = array();
-echo "Senor 森 贴吧自动签到系统开始工作。\n\n";
-echo "开始时间： ".date("Y-m-d H:i:s D",$starttime)."\n";
-if ($argc >= 2 && strcmp($argv[1],"cachetb")==0)
-{
     //Tieba info Cache
     echo "模式：缓存贴吧……\n";
     echo "---------------\n";
