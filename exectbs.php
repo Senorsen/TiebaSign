@@ -105,7 +105,7 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
                     if($ret->code==160008) sleep(2);
                 }
                 $this_tb_sign_cnt++;
-                if ($this_tb_sign_cnt > 10) break;
+//                if ($this_tb_sign_cnt > 10) break;
 //                sleep(rand(5, 8));
             }while($ret->no==2);
         }
