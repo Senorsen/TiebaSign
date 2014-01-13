@@ -7,3 +7,4 @@ RewriteEngine On
 # RewriteRule ^.*$ log.txt
 RewriteRule ^log-(.+)$ log.php?get=$1
 RewriteRule ^tbcache.serialize$ / [F]
+RewriteRule ^cache/.*$ / [F]

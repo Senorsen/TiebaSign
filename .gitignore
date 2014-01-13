@@ -4,3 +4,5 @@ conn.php
 .htpasswd
 nohup.out
 tbcache.serialize
+cache/tbcache*
+*.serialize
