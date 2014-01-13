@@ -50,7 +50,7 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
         array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'cookies'=>$row['cookies'],'filter'=>$row['filter'],'alltb'=>$alltb_o));
     }
     fwrite(fopen("tbcache.serialize","w"),serialize($users));
-    fwrite(fopen("cache/tbcache.".date('Y-m-d', time())".serialize","w"),serialize($users));
+    fwrite(fopen("cache/tbcache.".date('Y-m-d', time()).".serialize","w"),serialize($users));
     echo "获取完毕\n-------------------\n";
 } else {
     //Tieba Sign
