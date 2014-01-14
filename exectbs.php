@@ -39,15 +39,19 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
         echo "获取：".$row['desc'];
         $alltb_o = NULL;
         $i = 5;
+        $tb_home_obj = get_username($row['cookies']);
+        $username = $tb_home_obj->username;
+        $tb_home_str = $tb_home_obj->tb_home;
+        echo '('.$username.') ';
         while((is_null($alltb_o)||count($alltb_o->tbn)==0)&&$i--)
         {
-            $alltb_o = gettb($row['cookies'],$row['filter']);
+            $alltb_o = gettb($tb_home_str,$row['cookies'],$row['filter']);
         }
         $alltb_o->tbn = array_merge($rogue, $alltb_o->tbn);
         echo " - ".count($alltb_o->tbn)." - ".($alltb_o->valid+count($rogue))."\n";
         if($alltb_o->is_login==0) echo "**** 登录状态失效！？\n";
 
-        array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'cookies'=>$row['cookies'],'filter'=>$row['filter'],'alltb'=>$alltb_o));
+        array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'alltb'=>$alltb_o));
     }
     fwrite(fopen("tbcache.serialize","w"),serialize($users));
     fwrite(fopen("cache/tbcache.".date('Y-m-d', time()).".serialize","w"),serialize($users));
@@ -65,7 +69,7 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
     {
 //        sleep(rand(2, 5));
         //if($i<count($users)-1) continue;
-        printf("%s\t%s%-30s",date("H:i:s"),"当前签到：",$users[$i]->desc);
+        printf("%s\t%s%s(%s)",date("H:i:s"),"当前签到：",$users[$i]->desc,$users[$i]->username);
         if (!$users[$i]->alltb->is_login) {
             echo " 未登录！？\n";
             continue;
@@ -114,6 +118,13 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
     }
     echo date("H:i:s")."    全部签到完成，用时 ".date("i:s",time()-$starttime)."\n";
 }
+function get_username($cookies) {
+    $regex = '/var PageData = ({[\s\S]+?});/';
+    $ret = curlFetch('http://tieba.baidu.com/', $cookies);
+    preg_match($regex, $ret, $matches);
+    $obj = json_decode($matches[1]);
+    return (object)array('username'=>$obj->user->user_name,'tb_home'=>$ret);
+}
 function sign($cookies,$tbs,$fid,$tb)
 {
     $tbsurl='http://c.tieba.baidu.com/c/c/forum/sign';
@@ -161,7 +172,7 @@ function sign($cookies,$tbs,$fid,$tb)
         return (object)array('no'=>2,'str'=>'Unknown '.$obj["error_msg"],'code'=>$obj["error_code"]);
     }
 }
-function gettb($cookies,$filter)
+function gettb($tb_home_str,$cookies,$filter)
 {
     //返回tbs及tbn
     $tbs_obj = json_decode(curlFetch("http://tieba.baidu.com/dc/common/tbs","$cookies"));
@@ -169,7 +180,7 @@ function gettb($cookies,$filter)
     $is_login = $tbs_obj->is_login;
     if(!$is_login) return (object)array('tbs'=>'','tbn'=>array(), 'is_login' => 0);
     $tbn = array();
-    $str = curlFetch("http://tieba.baidu.com/","$cookies");
+    $str = $tb_home_str;
     preg_match('/forums["][:](.+?[\]])/',$str,$matches);
     if(is_null($matches)) return NULL;
     $str = $matches[1];
