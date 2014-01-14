@@ -1,5 +1,7 @@
-
 # TiebaSign
+# 20 March 2013 is the day when I met my Freda.
+# But Freda no longer belongs to me.
 0 0 * * * sh /home/prj/tbs/autotbs.sh
-0 23 * * * sh /home/prj/tbs/autoctb.sh
-30 23 * * * sh /home/prj/tbs/autotbs.sh
+30 22 * * * sh /home/prj/tbs/autoctb.sh
+0 7 * * * sh /home/prj/tbs/autotbs.sh
+0 23 * * * sh /home/prj/tbs/autotbs.sh

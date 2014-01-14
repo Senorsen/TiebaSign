@@ -39,19 +39,20 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
         echo "获取：".$row['desc'];
         $alltb_o = NULL;
         $i = 5;
-        $tb_home_obj = get_username($row['cookies']);
-        $username = $tb_home_obj->username;
-        $tb_home_str = $tb_home_obj->tb_home;
-        echo '('.$username.') ';
-        while((is_null($alltb_o)||count($alltb_o->tbn)==0)&&$i--)
-        {
-            $alltb_o = gettb($tb_home_str,$row['cookies'],$row['filter']);
+        $tbs = login_validate($row['cookies']);
+        $username = 'username';
+        if (!$tbs) {
+            echo " *** 登陆状态失效。\n";
+            array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>0));
+            continue;
         }
+        $tb_home_obj = get_tbhome($row['cookies']);
+        $username = get_username($tb_home_obj);
+        echo '('.$username.') ';
+        $alltb_o = gettb($tb_home_obj,$row['cookies'],$row['filter']);
         $alltb_o->tbn = array_merge($rogue, $alltb_o->tbn);
         echo " - ".count($alltb_o->tbn)." - ".($alltb_o->valid+count($rogue))."\n";
-        if($alltb_o->is_login==0) echo "**** 登录状态失效！？\n";
-
-        array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'alltb'=>$alltb_o));
+        array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>$tbs,'alltb'=>$alltb_o));
     }
     fwrite(fopen("tbcache.serialize","w"),serialize($users));
     fwrite(fopen("cache/tbcache.".date('Y-m-d', time()).".serialize","w"),serialize($users));
@@ -70,13 +71,13 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
 //        sleep(rand(2, 5));
         //if($i<count($users)-1) continue;
         printf("%s\t%s%s(%s)",date("H:i:s"),"当前签到：",$users[$i]->desc,$users[$i]->username);
-        if (!$users[$i]->alltb->is_login) {
+        if (!$users[$i]->tbs) {
             echo " 未登录！？\n";
             continue;
         }
         $cnt = count($users[$i]->alltb->tbn);
         $id = $users[$i]->id;
-        $tbs = $users[$i]->alltb->tbs;
+        $tbs = $users[$i]->tbs;
         $filter = $users[$i]->filter;
         $cookies = $users[$i]->cookies;
         printf("总贴吧数：%3d        过滤后：%3d\n", $cnt, $users[$i]->alltb->valid);
@@ -118,12 +119,21 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
     }
     echo date("H:i:s")."    全部签到完成，用时 ".date("i:s",time()-$starttime)."\n";
 }
-function get_username($cookies) {
-    $regex = '/var PageData = ({[\s\S]+?});/';
+function login_validate($cookies) {
+    $tbs_obj = json_decode(curlFetch("http://tieba.baidu.com/dc/common/tbs","$cookies"));
+    $tbs = $tbs_obj->tbs;
+    $is_login = $tbs_obj->is_login;
+    return $is_login?$tbs:0;
+}
+function get_tbhome($cookies) {
     $ret = curlFetch('http://tieba.baidu.com/', $cookies);
-    preg_match($regex, $ret, $matches);
+    return $ret;
+}
+function get_username($tb_home_str) {
+    $regex = '/var PageData = ({[\s\S]+?});/';
+    preg_match($regex, $tb_home_str, $matches);
     $obj = json_decode($matches[1]);
-    return (object)array('username'=>$obj->user->user_name,'tb_home'=>$ret);
+    return $obj->user->user_name;
 }
 function sign($cookies,$tbs,$fid,$tb)
 {
@@ -175,10 +185,6 @@ function sign($cookies,$tbs,$fid,$tb)
 function gettb($tb_home_str,$cookies,$filter)
 {
     //返回tbs及tbn
-    $tbs_obj = json_decode(curlFetch("http://tieba.baidu.com/dc/common/tbs","$cookies"));
-    $tbs = $tbs_obj->tbs;
-    $is_login = $tbs_obj->is_login;
-    if(!$is_login) return (object)array('tbs'=>'','tbn'=>array(), 'is_login' => 0);
     $tbn = array();
     $str = $tb_home_str;
     preg_match('/forums["][:](.+?[\]])/',$str,$matches);
@@ -194,7 +200,7 @@ function gettb($tb_home_str,$cookies,$filter)
         if(UserFilter($this_tb->tb,$this_tb->level,$this_tb->exp,$filter)) $valid++;
     }
     if(count($tbn)>0)expsort(0,count($tbn)-1,$tbn);  //按经验值排序
-    return (object)array('tbs'=>$tbs,'tbn'=>$tbn, 'valid'=>$valid, 'is_login' => 1);
+    return (object)array('tbn'=>$tbn, 'valid'=>$valid, 'is_login' => 1);
 }
 function expsort($l,$r,&$a)
 {
