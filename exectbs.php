@@ -1,5 +1,5 @@
 <?php 
-set_time_limit(36000);	//一小时时间
+set_time_limit(3600);	//一小时时间
 date_default_timezone_set('PRC');
 $users = array();
 $starttime=time();
@@ -59,6 +59,10 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
     echo "获取完毕\n-------------------\n";
 } else {
     //Tieba Sign
+    $wait_flag = 0;
+    if (3600*24-(time()+3600*8)%(3600*24)<=120) {
+       $wait_flag = 1;
+    }
     echo "模式：签到\n";
     $users = unserialize(file_get_contents("tbcache.serialize"));
     if(is_null($users))
@@ -111,6 +115,11 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
                     if($ret->code==160008) sleep(2);
                 }
                 $this_tb_sign_cnt++;
+                while ($wait_flag) {
+                    echo '*';
+                    $ret = sign($cookies,$tbs,$fid,$tb);
+                    if ((time()+3600*24)%(3600*24)>120&& (time()+3600*24)%(3600*24)<600) $wait_flag = 0;
+                }
 //                if ($this_tb_sign_cnt > 10) break;
 //                sleep(rand(5, 8));
             }while($ret->no==2);
