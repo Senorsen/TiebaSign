@@ -29,7 +29,10 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
     $rogue = array();
     foreach ($rogue_n as $value) {
         echo "rogue-get: ".$value." = ";
-        $fid = getfid($value);
+        $fid = 0;
+        while(!$fid) {
+            $fid = getfid($value);
+        }
         echo $fid."\n";
         array_push($rogue, (object)array('tb' => $value, 'fid' => $fid, 'force' => 1));
     }
