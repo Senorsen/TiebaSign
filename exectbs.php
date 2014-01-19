@@ -39,7 +39,7 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
     echo "---------------\n";
     while($row = $result->fetch_array())
     {
-        echo "获取：".$row['nick'];
+        echo "获取： ".$row['id'].' '.$row['nick'];
         $alltb_o = NULL;
         $i = 5;
         $tbs = login_validate($row['cookies']);
