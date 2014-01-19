@@ -46,7 +46,7 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
         $username = 'username';
         if (!$tbs) {
             echo " *** 登陆状态失效。\n";
-            array_push($users, (object)array('id'=>$row['id'],'nick'=>$row['nick'],'email'=>$row['email'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>0));
+            array_push($users, (object)array('id'=>$row['id'],'nick'=>$row['nick'],'wantmail'=>$row['wantmail'],'email'=>$row['email'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>0));
             continue;
         }
         $tb_home_obj = get_tbhome($row['cookies']);
@@ -55,7 +55,7 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
         $alltb_o = gettb($tb_home_obj,$row['cookies'],$row['filter']);
         $alltb_o->tbn = array_merge($rogue, $alltb_o->tbn);
         echo " - ".count($alltb_o->tbn)." - ".($alltb_o->valid+count($rogue))."\n";
-        array_push($users, (object)array('id'=>$row['id'],'nick'=>$row['nick'],'email'=>$row['email'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>$tbs,'alltb'=>$alltb_o));
+        array_push($users, (object)array('id'=>$row['id'],'nick'=>$row['nick'],'wantmail'=>$row['wantmail'],'email'=>$row['email'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>$tbs,'alltb'=>$alltb_o));
     }
     fwrite(fopen("tbcache.serialize","w"),serialize($users));
     fwrite(fopen("cache/tbcache.".date('Y-m-d', time()).".serialize","w"),serialize($users));
