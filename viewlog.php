@@ -12,6 +12,7 @@ var now = new DateTime();
 var tstxt='';
 $(function(){
     $.ajaxSetup({async:true});
+    $('#check-log').load('log-today-check');
     $("#time").val('今天-'+now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+0);
     tstxt = $("#time").val();
     var s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour();
@@ -35,6 +36,8 @@ $(function(){
 当前时间：<div id="current-time"></div>
 <input type="hidden" id="time" value="这里可以改成你想看的时间，清空则为当前时间" maxlength="200" style="width:300px">
 <div id="cache-log"></div>
+<hr>
+<div id="check-log"></div>
 <hr>
 <div id="sign-log"></div>
 <div id="is-btn" style="position:fixed;right:100px;bottom:100px;width:60px;height:60px;background:rgba(0,0,0,1);opacity:0.5;color:white">总在底端：<div id="is-b" style="display:inline">0</div></div>
