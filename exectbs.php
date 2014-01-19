@@ -5,7 +5,7 @@ $users = array();
 $starttime=time();
 $usertime = array();
 echo "Senor 森 贴吧自动签到系统开始工作。\n\n";
-echo "开始时间： ".date("Y-m-d H:i:s D",$starttime)."\n";
+echo "开始时间： ".date("Y-m-d D H:i:s",$starttime)."\n";
 
 if ($argc >= 2) {
 switch ($argv[1]) {
