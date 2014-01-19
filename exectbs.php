@@ -55,7 +55,7 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
         $alltb_o = gettb($tb_home_obj,$row['cookies'],$row['filter']);
         $alltb_o->tbn = array_merge($rogue, $alltb_o->tbn);
         echo " - ".count($alltb_o->tbn)." - ".($alltb_o->valid+count($rogue))."\n";
-        array_push($users, (object)array('id'=>$row['id'],'nick'=>$row['nick'],'email'=>$row['email'],username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>$tbs,'alltb'=>$alltb_o));
+        array_push($users, (object)array('id'=>$row['id'],'nick'=>$row['nick'],'email'=>$row['email'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>$tbs,'alltb'=>$alltb_o));
     }
     fwrite(fopen("tbcache.serialize","w"),serialize($users));
     fwrite(fopen("cache/tbcache.".date('Y-m-d', time()).".serialize","w"),serialize($users));
