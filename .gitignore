@@ -6,3 +6,5 @@ nohup.out
 tbcache.serialize
 cache/tbcache*
 *.serialize
+PHPMailer
+sendmail.php

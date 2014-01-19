@@ -39,14 +39,14 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
     echo "---------------\n";
     while($row = $result->fetch_array())
     {
-        echo "获取：".$row['desc'];
+        echo "获取：".$row['nick'];
         $alltb_o = NULL;
         $i = 5;
         $tbs = login_validate($row['cookies']);
         $username = 'username';
         if (!$tbs) {
             echo " *** 登陆状态失效。\n";
-            array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>0));
+            array_push($users, (object)array('id'=>$row['id'],'nick'=>$row['nick'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>0));
             continue;
         }
         $tb_home_obj = get_tbhome($row['cookies']);
@@ -55,7 +55,7 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
         $alltb_o = gettb($tb_home_obj,$row['cookies'],$row['filter']);
         $alltb_o->tbn = array_merge($rogue, $alltb_o->tbn);
         echo " - ".count($alltb_o->tbn)." - ".($alltb_o->valid+count($rogue))."\n";
-        array_push($users, (object)array('id'=>$row['id'],'desc'=>$row['desc'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>$tbs,'alltb'=>$alltb_o));
+        array_push($users, (object)array('id'=>$row['id'],'nick'=>$row['nick'],'email'=>$row['email'],username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>$tbs,'alltb'=>$alltb_o));
     }
     fwrite(fopen("tbcache.serialize","w"),serialize($users));
     fwrite(fopen("cache/tbcache.".date('Y-m-d', time()).".serialize","w"),serialize($users));
@@ -77,7 +77,7 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
     {
 //        sleep(rand(2, 5));
         //if($i<count($users)-1) continue;
-        printf("%s\t%s%s(%s)",date("H:i:s"),"当前签到：",$users[$i]->desc,$users[$i]->username);
+        printf("%s\t%s%s(%s)",date("H:i:s"),"当前签到：",$users[$i]->nick,$users[$i]->username);
         if (!$users[$i]->tbs) {
             echo " 未登录！？\n";
             continue;
