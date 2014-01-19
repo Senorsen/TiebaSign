@@ -68,7 +68,7 @@ case "check": {
     require 'sendmail.php';
     $obj = unserialize(file_get_contents('tbcache.serialize'));
     foreach ($obj as $key => $value) {
-        if ($value->$tbs == 0) {
+        if ($value->tbs == 0) {
             alert_loginfail($value->id);
         }
     }
