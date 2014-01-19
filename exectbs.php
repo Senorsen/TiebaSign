@@ -121,7 +121,7 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
                 while ($wait_flag) {
                     echo '*';
                     $ret = sign($cookies,$tbs,$fid,$tb);
-                    if ((time()+3600*24)%(3600*24)>120&& (time()+3600*24)%(3600*24)<600) $wait_flag = 0;
+                    if ($ret->no == 0 && ((time()+3600*24)%(3600*24)>120&& (time()+3600*24)%(3600*24)<3600*23)) $wait_flag = 0;
                 }
 //                if ($this_tb_sign_cnt > 10) break;
 //                sleep(rand(5, 8));
