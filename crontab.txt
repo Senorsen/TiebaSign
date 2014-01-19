@@ -5,3 +5,4 @@
 30 22 * * * sh /home/prj/tbs/autoctb.sh
 0 7 * * * sh /home/prj/tbs/autotbs.sh
 0 23 * * * sh /home/prj/tbs/autotbs.sh
+0 9 * * * sh /home/prj/tbs/autochk.sh

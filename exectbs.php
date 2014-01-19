@@ -7,21 +7,22 @@ $usertime = array();
 echo "Senor 森 贴吧自动签到系统开始工作。\n\n";
 echo "开始时间： ".date("Y-m-d H:i:s D",$starttime)."\n";
 
-if ($argc >= 2 && strcmp($argv[1],"cachetb")==0)
-{
-//###########################################################################################
-    require "../Conn/Conn.php";
-//###########################################################################################
-$db = @senor_conn();
-if (mysqli_connect_errno())
-{
-    echo('Could not connect: ' . mysqli_error());
-}
-else if(! @$db->set_charset("utf8"))
-{
-    echo("Could not connect: an error occured when program set charset");
-}
-$result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
+if ($argc >= 2) {
+switch ($argv[1]) {
+case "cachetb": {
+    //###########################################################################################
+        require "../Conn/Conn.php";
+    //###########################################################################################
+    $db = @senor_conn();
+    if (mysqli_connect_errno())
+    {
+        echo('Could not connect: ' . mysqli_error());
+    }
+    else if(! @$db->set_charset("utf8"))
+    {
+        echo("Could not connect: an error occured when program set charset");
+    }
+    $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
     //Tieba info Cache
     echo "模式：缓存贴吧……\n";
     echo "---------------\n";
@@ -60,12 +61,32 @@ $result = $db->query("SELECT * FROM `tb_user` ORDER BY `id`");
     fwrite(fopen("tbcache.serialize","w"),serialize($users));
     fwrite(fopen("cache/tbcache.".date('Y-m-d', time()).".serialize","w"),serialize($users));
     echo "获取完毕\n-------------------\n";
+    break;
+}
+case "check": {
+    echo "检查模式\n";
+    require 'sendmail.php';
+    $obj = unserialize(file_get_contents('tbcache.serialize'));
+    foreach ($obj as $key => $value) {
+        if ($value->$tbs == 0) {
+            alert_loginfail($value->id);
+        }
+    }
+    break;
+}
+default: {
+    echo "错误：未指定操作。\n";
+    break;
+}
+}
 } else {
-    //Tieba Sign
+    // 无参数即 Tieba Sign
     $wait_flag = 0;
     if (3600*24-(time()+3600*8)%(3600*24)<=120) {
        $wait_flag = 1;
     }
+    // 取消wait_flag
+    $wait_flag = 0;
     echo "模式：签到\n";
     $users = unserialize(file_get_contents("tbcache.serialize"));
     if(is_null($users))
