@@ -50,7 +50,10 @@ case "cachetb": {
             array_push($users, (object)array('id'=>$row['id'],'nick'=>$row['nick'],'wantmail'=>$row['wantmail'],'email'=>$row['email'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>0));
             continue;
         }
-        $tb_home_obj = get_tbhome($row['cookies']);
+        $tb_home_obj = null;
+        while (is_null($tb_home_obj)) {
+            $tb_home_obj = get_tbhome($row['cookies']);
+        }
         $username = get_username($tb_home_obj);
         echo '('.$username.') ';
         $alltb_o = gettb($tb_home_obj,$row['cookies'],$row['filter']);
