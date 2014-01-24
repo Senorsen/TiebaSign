@@ -1,4 +1,4 @@
-cd /home/prj/tbs
+cd /home/prj/tbsexec
 rm ./log/log-today-cache.log
 today=`date +%Y-%m-%d`
 php exectbs.php cachetb > ./log/log-today-cache.log

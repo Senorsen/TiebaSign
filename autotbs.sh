@@ -1,4 +1,4 @@
-cd /home/prj/tbs
+cd /home/prj/tbsexec
 rm ./log/log-today-sign.log
 today=`date +%Y-%m-%d-%H`
 php exectbs.php > ./log/log-today-sign.log
