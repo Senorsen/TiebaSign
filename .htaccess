@@ -1,6 +1,6 @@
 AuthName "Senorsen's protected zone"
 Authtype Basic
-AuthUserFile /home/prj/tbs/.htpasswd
+AuthUserFile /home/prj/tbsexec/.htpasswd
 Require valid-user
 
 RewriteEngine On
