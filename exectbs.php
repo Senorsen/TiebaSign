@@ -114,6 +114,11 @@ default: {
         $tbs = $users[$i]->tbs;
         $filter = $users[$i]->filter;
         $cookies = $users[$i]->cookies;
+        $tbs = login_validate($cookies);
+        if (!$tbs) {
+            echo ' 「登录状态最近失效」 '."\n";
+            continue;
+        }
         printf("总贴吧数：%3d        过滤后：%3d\n", $cnt, $users[$i]->alltb->valid);
         echo "-----------------\n";
         for($j=0;$j<$cnt;$j++)
