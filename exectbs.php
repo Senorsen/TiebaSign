@@ -51,10 +51,13 @@ case "cachetb": {
             continue;
         }
         $tb_home_obj = null;
-        while (is_null($tb_home_obj)) {
-            $tb_home_obj = get_tbhome($row['cookies']);
+        $username = FALSE;
+        while ($username === FALSE) {
+            while (is_null($tb_home_obj)) {
+                $tb_home_obj = get_tbhome($row['cookies']);
+            }
+            $username = get_username($tb_home_obj);
         }
-        $username = get_username($tb_home_obj);
         echo '('.$username.') ';
         $alltb_o = gettb($tb_home_obj,$row['cookies'],$row['filter']);
         $alltb_o->tbn = array_merge($rogue, $alltb_o->tbn);
@@ -168,7 +171,9 @@ function get_tbhome($cookies) {
 function get_username($tb_home_str) {
     $regex = '/var PageData = ({[\s\S]+?});/';
     preg_match($regex, $tb_home_str, $matches);
-    $obj = json_decode($matches[1]);
+    if (!isset($matches[1])) return FALSE;
+    $json_str = @$matches[1];
+    $obj = json_decode($json_str);
     return $obj->user->user_name;
 }
 function sign($cookies,$tbs,$fid,$tb)
