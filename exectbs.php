@@ -40,7 +40,7 @@ case "cachetb": {
     echo "---------------\n";
     while($row = $result->fetch_array())
     {
-        echo "获取： ".$row['id'].' '.$row['nick'];
+        echo "获取： ".$row['id'].' '.$row['nick'].' ';
         $alltb_o = NULL;
         $i = 5;
         $tbs = login_validate($row['cookies']);
@@ -53,7 +53,7 @@ case "cachetb": {
         $tb_home_obj = null;
         $username = FALSE;
         while ($username === FALSE) {
-            while (is_null($tb_home_obj)) {
+            while ($tb_home_obj != '' && is_null($tb_home_obj)) {
                 $tb_home_obj = get_tbhome($row['cookies']);
             }
             $username = get_username($tb_home_obj);
@@ -271,7 +271,7 @@ function curlFetch($url, $cookie = "", $data = null, $ua = "")
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // 返回字符串，而非直接输出
 	curl_setopt($ch, CURLOPT_HEADER, false);   // 不返回header部分
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);   // 设置socket连接超时时间
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4);   // 设置socket连接超时时间
 	/*if (!empty($referer))
 	{
 		curl_setopt($ch, CURLOPT_REFERER, $referer);   // 设置引用网址
@@ -297,7 +297,7 @@ function curlFetch($url, $cookie = "", $data = null, $ua = "")
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
 	}
-    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 	$str = curl_exec($ch);
 	curl_close($ch);
 	return $str;
