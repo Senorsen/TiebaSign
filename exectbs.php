@@ -50,18 +50,21 @@ case "cachetb": {
             array_push($users, (object)array('id'=>$row['id'],'nick'=>$row['nick'],'wantmail'=>$row['wantmail'],'email'=>$row['email'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>0));
             continue;
         }
-        $tb_home_obj = null;
         $username = FALSE;
+        $tb_home_obj = null;
         while ($username === FALSE) {
-            while ($tb_home_obj != '' && is_null($tb_home_obj)) {
+            $username = FALSE;
+            echo '^';
+            while ($tb_home_obj == '' || is_null($tb_home_obj)) {
+                echo '*';
                 $tb_home_obj = get_tbhome($row['cookies']);
             }
             $username = get_username($tb_home_obj);
         }
         echo '('.$username.') ';
         $alltb_o = gettb($tb_home_obj,$row['cookies'],$row['filter']);
+        echo " - ".count($alltb_o->tbn)." - ".($alltb_o->valid)."\n";
         $alltb_o->tbn = array_merge($rogue, $alltb_o->tbn);
-        echo " - ".count($alltb_o->tbn)." - ".($alltb_o->valid+count($rogue))."\n";
         array_push($users, (object)array('id'=>$row['id'],'nick'=>$row['nick'],'wantmail'=>$row['wantmail'],'email'=>$row['email'],'username'=>$username,'cookies'=>$row['cookies'],'filter'=>$row['filter'],'tbs'=>$tbs,'alltb'=>$alltb_o));
     }
     fwrite(fopen("tbcache.serialize","w"),serialize($users));
@@ -234,7 +237,7 @@ function gettb($tb_home_str,$cookies,$filter)
     $tbn = array();
     $str = $tb_home_str;
     preg_match('/forums["][:](.+?[\]])/',$str,$matches);
-    if(is_null($matches)) return NULL;
+    if(!isset($matches[1])) return NULL;
     $str = $matches[1];
     $tbn_obj = json_decode($str);
     if(is_null($tbn_obj)) return (object)array('tbs'=>'','tbn'=>array());
@@ -265,10 +268,15 @@ function expsort($l,$r,&$a)
 }
 function UserFilter($tbname,$lv,$ex,$filter){$fr=1;eval($filter);return $fr;}
 function getfid($tbname) {
-    $url = "http://wapp.baidu.com/f?kw=".urlencode($tbname);
-    $retstr = curlFetch($url);
-    preg_match('/ name="fid" value="(\d+)"\/>/', $retstr, $matches);
-    $fid = $matches[1];
+    $flag = 1;
+    while ($flag) {
+        $url = "http://wapp.baidu.com/f?kw=".urlencode($tbname);
+        $retstr = curlFetch($url);
+        preg_match('/ name="fid" value="(\d+)"\/>/', $retstr, $matches);
+        if (!isset($matches[1])) continue;
+        $fid = $matches[1];
+        $flag = 0;
+    }
     return $fid;
 }
 function curlFetch($url, $cookie = "", $data = null, $ua = "")
