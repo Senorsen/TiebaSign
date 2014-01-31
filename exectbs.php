@@ -180,9 +180,10 @@ function get_username($tb_home_str) {
     $regex = '/var PageData = ({[\s\S]+?});/';
     preg_match($regex, $tb_home_str, $matches);
     if (!isset($matches[1])) return FALSE;
-    $json_str = @$matches[1];
+    preg_match('/\'user\' : ({[\s\S]+?})};/', $matches[0], $matches2);
+    $json_str = $matches2[1]; 
     $obj = json_decode($json_str);
-    return $obj->user->user_name;
+    return $obj->user_name;
 }
 function sign($cookies,$tbs,$fid,$tb)
 {
