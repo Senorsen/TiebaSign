@@ -12,14 +12,14 @@ var now = new DateTime();
 var tstxt='';
 $(function(){
     $.ajaxSetup({async:true});
-    $('#check-log').load('log-today-check');
+    $('#check-log').load('log.php?today-check');
     $("#time").val('今天-'+now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+0);
     tstxt = $("#time").val();
     var s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour();
     $cache = $('#cache-log');
     $sign = $('#sign-log');
-    ra = function(){var a = s.match(/^\d+-\d+-\d+/)[0];$cache.load('log-today-cache');};
-    rb = function(){now = new DateTime();if($('#time').val() == '' || /今天/.test($('#time').val())){s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+0;s2='今天-'+s;if($('#time').val() != s2)$('#time').val(s2);if(/全部签到完成/.test($sign.html()))return;}else s=$('#time').val();$sign.load('log-today-sign','',function(){setTimeout("if(is_b) document.body.scrollTop = document.body.scrollHeight;",100);});};
+    ra = function(){var a = s.match(/^\d+-\d+-\d+/)[0];$cache.load('log.php?today-cache');};
+    rb = function(){now = new DateTime();if($('#time').val() == '' || /今天/.test($('#time').val())){s = now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+0;s2='今天-'+s;if($('#time').val() != s2)$('#time').val(s2);if(/全部签到完成/.test($sign.html()))return;}else s=$('#time').val();$sign.load('log.php?today-sign','',function(){setTimeout("if(is_b) document.body.scrollTop = document.body.scrollHeight;",100);});};
     setInterval("$('#current-time').html(now.year()+'-'+now.month()+'-'+parseInt(now.day())+'-'+now.hour());",1000);
     ra();
     rb();
