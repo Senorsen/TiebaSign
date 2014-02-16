@@ -1,6 +1,8 @@
 TiebaSign
 =========
 
+**No updates any more**
+
 php script with php (linux command line).
 
 
